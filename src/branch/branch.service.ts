@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBranchDto } from './dto/create-branch.dto';
 import { UpdateBranchDto } from './dto/update-branch.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -15,5 +15,17 @@ export class BranchService {
   async create(createBranchDto: CreateBranchDto): Promise<Branch> {
     const newBranch = new this.branchModel(createBranchDto);
     return await newBranch.save();
+  }
+
+  async getAllBranches(): Promise<Branch[]> {
+    return await this.branchModel.find().exec();
+  }
+
+  async getBranch(id: string): Promise<Branch> {
+    const branch = await this.branchModel.findById(id).exec();
+    if (!branch) {
+      throw new NotFoundException(`Branch with id ${id} not found`);
+    }
+    return branch;
   }
 }

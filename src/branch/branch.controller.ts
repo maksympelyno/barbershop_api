@@ -8,7 +8,17 @@ export class BranchController {
   constructor(private readonly branchService: BranchService) {}
 
   @Post()
-  create(@Body() createBranchDto: CreateBranchDto): Promise<Branch> {
+  createBranch(@Body() createBranchDto: CreateBranchDto): Promise<Branch> {
     return this.branchService.create(createBranchDto);
+  }
+
+  @Get()
+  getAllBranches(): Promise<Branch[]> {
+    return this.branchService.getAllBranches();
+  }
+
+  @Get(':id')
+  getBranch(@Param('id') id: string): Promise<Branch> {
+    return this.branchService.getBranch(id);
   }
 }
