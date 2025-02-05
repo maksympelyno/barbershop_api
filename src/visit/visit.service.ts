@@ -37,6 +37,7 @@ export class VisitService {
     const visit = await this.visitModel.create({
       ...createVisitDto,
       finalPrice,
+      branch: haircut.branch,
     });
 
     if (!client.isRegular) {
@@ -80,18 +81,15 @@ export class VisitService {
   }
 
   async getVisitsByBranchId(branchId: string): Promise<VisitInfo[]> {
-    const haircuts = await this.haircutModel.find({ branch: branchId }).exec();
-
-    if (!haircuts.length) {
-      throw new NotFoundException('No haircuts found for this branch');
-    }
-    const haircutIds = haircuts.map((h) => h._id.toString());
-
     const visits = await this.visitModel
-      .find({ haircut: { $in: haircutIds } })
+      .find({ branch: branchId })
       .populate('client', 'lastName firstName phoneNumber isRegular')
       .populate('haircut', 'name price')
       .exec();
+
+    if (!visits.length) {
+      throw new NotFoundException('No visits found for this branch');
+    }
 
     return visits.map((entry) => ({
       _id: entry._id.toString(),
