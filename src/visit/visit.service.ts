@@ -5,6 +5,7 @@ import { Visit, VisitDocument } from './schemas/visit.schema';
 import { Client, ClientDocument } from 'src/client/schemas/client.schema';
 import { Haircut, HaircutDocument } from 'src/haircut/schemas/haircut.schema';
 import { CreateVisitDto } from './dto/create-visit.dto';
+import { VisitInfo } from './types/visit-info.interface';
 
 @Injectable()
 export class VisitService {
@@ -52,5 +53,60 @@ export class VisitService {
     }
 
     return visit;
+  }
+
+  async getAllVisits(): Promise<VisitInfo[]> {
+    const visits = await this.visitModel
+      .find()
+      .populate('client', 'lastName firstName phoneNumber isRegular')
+      .populate('haircut', 'name price')
+      .exec();
+
+    return visits.map((entry, index) => ({
+      _id: entry._id.toString(),
+      client: {
+        lastName: entry.client.lastName,
+        firstName: entry.client.firstName,
+        phoneNumber: entry.client.phoneNumber,
+        isRegular: entry.client.isRegular,
+      },
+      haircut: {
+        name: entry.haircut.name,
+        price: entry.haircut.price,
+      },
+      finalPrice: entry.finalPrice,
+      date: entry.date.toISOString(),
+    }));
+  }
+
+  async getVisitsByBranchId(branchId: string): Promise<VisitInfo[]> {
+    const haircuts = await this.haircutModel.find({ branch: branchId }).exec();
+
+    if (!haircuts.length) {
+      throw new NotFoundException('No haircuts found for this branch');
+    }
+    const haircutIds = haircuts.map((h) => h._id.toString());
+
+    const visits = await this.visitModel
+      .find({ haircut: { $in: haircutIds } })
+      .populate('client', 'lastName firstName phoneNumber isRegular')
+      .populate('haircut', 'name price')
+      .exec();
+
+    return visits.map((entry) => ({
+      _id: entry._id.toString(),
+      client: {
+        lastName: entry.client.lastName,
+        firstName: entry.client.firstName,
+        phoneNumber: entry.client.phoneNumber,
+        isRegular: entry.client.isRegular,
+      },
+      haircut: {
+        name: entry.haircut.name,
+        price: entry.haircut.price,
+      },
+      finalPrice: entry.finalPrice,
+      date: entry.date.toISOString(),
+    }));
   }
 }

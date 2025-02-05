@@ -33,4 +33,10 @@ export class ClientService {
     }
     return client;
   }
+
+  async searchClientsByPhone(phone: string): Promise<Client[]> {
+    return this.clientModel
+      .find({ phoneNumber: { $regex: phone, $options: 'i' } })
+      .exec();
+  }
 }
