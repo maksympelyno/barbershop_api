@@ -1,26 +1,36 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateClientDto } from './dto/create-client.dto';
-import { UpdateClientDto } from './dto/update-client.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { Client, ClientDocument } from './schemas/client.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class ClientService {
-  create(createClientDto: CreateClientDto) {
-    return 'This action adds a new client';
+  constructor(
+    @InjectModel(Client.name) private clientModel: Model<ClientDocument>,
+  ) {}
+
+  async createClient(createClientDto: CreateClientDto): Promise<Client> {
+    return this.clientModel.create(createClientDto);
   }
 
-  findAll() {
-    return `This action returns all client`;
+  async getAllClients(): Promise<Client[]> {
+    return this.clientModel.find().exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} client`;
+  async getClient(id: string): Promise<Client> {
+    const client = await this.clientModel.findById(id).exec();
+    if (!client) {
+      throw new NotFoundException(`Client with id ${id} not found`);
+    }
+    return client;
   }
 
-  update(id: number, updateClientDto: UpdateClientDto) {
-    return `This action updates a #${id} client`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} client`;
+  async deleteClient(id: string): Promise<Client> {
+    const client = await this.clientModel.findByIdAndDelete(id).exec();
+    if (!client) {
+      throw new NotFoundException(`Client with id ${id} not found`);
+    }
+    return client;
   }
 }
