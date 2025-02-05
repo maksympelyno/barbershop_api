@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { BranchModule } from './branch/branch.module';
 import { VisitModule } from './visit/visit.module';
+import { StatisticsModule } from './statistics/statistics.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { VisitModule } from './visit/visit.module';
     ClientModule,
     BranchModule,
     VisitModule,
+    StatisticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

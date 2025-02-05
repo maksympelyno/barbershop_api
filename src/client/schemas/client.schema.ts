@@ -14,6 +14,13 @@ export class Client {
   @Prop()
   middleName?: string;
 
+  @Prop({
+    required: true,
+    match: /^[0-9]{10}$/,
+    unique: true,
+  })
+  phoneNumber: string;
+
   @Prop({ required: true, enum: ['male', 'female'] })
   gender: string;
 
