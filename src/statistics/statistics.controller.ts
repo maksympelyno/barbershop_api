@@ -1,9 +1,14 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { StatisticsService } from './statistics.service';
 import { PopularHaircut } from './types/statistics.interface';
 import { ApiOperation, ApiParam } from '@nestjs/swagger';
+import { Roles } from 'src/decorators/roles.decorator';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @Controller('statistics')
+@Roles('user', 'manager')
+@UseGuards(RolesGuard)
 export class StatisticsController {
   constructor(private readonly statisticsService: StatisticsService) {}
 

@@ -8,6 +8,8 @@ import { ConfigModule } from '@nestjs/config';
 import { BranchModule } from './branch/branch.module';
 import { VisitModule } from './visit/visit.module';
 import { StatisticsModule } from './statistics/statistics.module';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { StatisticsModule } from './statistics/statistics.module';
     BranchModule,
     VisitModule,
     StatisticsModule,
+    UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

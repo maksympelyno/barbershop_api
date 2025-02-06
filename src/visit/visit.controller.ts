@@ -1,15 +1,24 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { VisitService } from './visit.service';
 import { CreateVisitDto } from './dto/create-visit.dto';
 import { Visit } from './schemas/visit.schema';
 import { VisitInfo } from './types/visit-info.interface';
-import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiHeader,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+} from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { Roles } from 'src/decorators/roles.decorator';
 
 @Controller('visit')
 export class VisitController {
   constructor(private readonly visitService: VisitService) {}
 
   @Post()
+  @Roles('user', 'admin')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create a new visit' })
   @ApiResponse({
     status: 201,
@@ -23,6 +32,12 @@ export class VisitController {
   @Get()
   @ApiOperation({ summary: 'Get all visits' })
   @ApiResponse({ status: 200, description: 'Return all visits.' })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer token for authentication',
+    required: true,
+    example: 'Bearer your-jwt-token',
+  })
   async getAllVisits(): Promise<VisitInfo[]> {
     return this.visitService.getAllVisits();
   }
