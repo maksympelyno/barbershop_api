@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { ApiProperty } from '@nestjs/swagger';
 import { HydratedDocument, Model, Types } from 'mongoose';
 import { Branch } from 'src/branch/schemas/branch.schema';
 import { HistoryDocument } from 'src/haircut/schemas/price-history.schema';
@@ -7,15 +8,35 @@ export type HaircutDocument = HydratedDocument<Haircut>;
 
 @Schema()
 export class Haircut {
+  @ApiProperty({ example: 'string', description: 'Haircut ID' })
+  _id: Types.ObjectId;
+
+  @ApiProperty({
+    description: 'The name of the haircut',
+    type: 'string',
+  })
   @Prop({ required: true })
   name: string;
 
+  @ApiProperty({
+    description: 'The gender for which the haircut is applicable',
+    enum: ['male', 'female'],
+    type: 'string',
+  })
   @Prop({ required: true, enum: ['male', 'female'] })
   gender: string;
 
+  @ApiProperty({
+    description: 'The price of the haircut',
+    type: 'number',
+  })
   @Prop({ required: true })
   price: number;
 
+  @ApiProperty({
+    description: 'The branch associated with the haircut',
+    type: 'string',
+  })
   @Prop({ type: Types.ObjectId, ref: 'Branch' })
   branch: Branch;
 }
@@ -26,7 +47,7 @@ HaircutSchema.post<HaircutDocument>('save', async function (doc, next) {
   try {
     const HistoryModel = doc.model('History') as Model<HistoryDocument>;
     const historyEntry = new HistoryModel({
-      haircut: doc._id,
+      haircut: doc._id.toString(),
       oldPrice: doc.price,
       newPrice: doc.price,
     });
@@ -50,7 +71,7 @@ HaircutSchema.pre('findOneAndUpdate', async function (next) {
     if (doc.price !== update.price) {
       const HistoryModel = doc.model('History') as Model<HistoryDocument>;
       const historyEntry = new HistoryModel({
-        haircut: doc._id,
+        haircut: doc._id.toString(),
         oldPrice: doc.price,
         newPrice: update.price,
       });
