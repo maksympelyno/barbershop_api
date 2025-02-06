@@ -5,7 +5,7 @@ import { Model } from 'mongoose';
 import { CreateHaircutDto } from './dto/create-haircut.dto';
 import { UpdateHaircutDto } from './dto/update-haircut.dto';
 import { History, HistoryDocument } from './schemas/price-history.schema';
-import { HistoryChange } from './types/history-change.interface';
+import { HistoryChange } from './types/history-change.response';
 import { HaircutFilter } from './types/haircat-filter.interface';
 
 @Injectable()
@@ -63,7 +63,6 @@ export class HaircutService {
     const filter: HaircutFilter = {
       branch: branchId,
     };
-
     if (name) {
       filter.name = new RegExp(name, 'i');
     }

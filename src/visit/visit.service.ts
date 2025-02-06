@@ -77,6 +77,7 @@ export class VisitService {
       },
       finalPrice: entry.finalPrice,
       date: entry.date.toISOString(),
+      branchId: entry.branch.toString(),
     }));
   }
 
@@ -105,6 +106,7 @@ export class VisitService {
       },
       finalPrice: entry.finalPrice,
       date: entry.date.toISOString(),
+      branchId: entry.branch.toString(),
     }));
   }
 }

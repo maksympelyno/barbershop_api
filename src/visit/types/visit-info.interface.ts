@@ -16,4 +16,5 @@ export interface VisitInfo {
   haircut: HaircutInfo;
   finalPrice: number;
   date: string;
+  branchId: string;
 }
