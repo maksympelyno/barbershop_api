@@ -90,6 +90,7 @@ export class VisitService {
       .find({ branch: branchId })
       .populate('client', 'lastName firstName phoneNumber isRegular')
       .populate('haircut', 'name price')
+      .sort({ date: -1 })
       .exec();
 
     if (!visits.length) {
