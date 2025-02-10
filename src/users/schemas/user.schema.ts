@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
+import { Branch } from 'src/branch/schemas/branch.schema';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -22,6 +23,9 @@ export class User {
 
   @Prop({ default: 'manager' })
   role: string;
+
+  @Prop({ type: Types.ObjectId, ref: 'Branch', required: false })
+  branch: Branch;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

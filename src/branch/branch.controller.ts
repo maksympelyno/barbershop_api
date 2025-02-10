@@ -1,10 +1,15 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, UseGuards } from '@nestjs/common';
 import { BranchService } from './branch.service';
 import { CreateBranchDto } from './dto/create-branch.dto';
 import { Branch } from './schemas/branch.schema';
 import { ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import { Roles } from 'src/decorators/roles.decorator';
+import { UserRole } from 'src/common/enums/role.enum';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @Controller('branch')
+@Roles(UserRole.Manager, UserRole.Admin)
+@UseGuards(RolesGuard)
 export class BranchController {
   constructor(private readonly branchService: BranchService) {}
 

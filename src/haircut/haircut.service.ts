@@ -70,6 +70,10 @@ export class HaircutService {
     return this.haircutModel.find(filter).exec();
   }
 
+  async getHaircutsByName(name: string): Promise<Haircut[]> {
+    return this.haircutModel.find({ name: new RegExp(name, 'i') }).exec();
+  }
+
   async deleteHaircut(id: string): Promise<void> {
     const result = await this.haircutModel.deleteOne({ _id: id }).exec();
     if (result.deletedCount === 0) {

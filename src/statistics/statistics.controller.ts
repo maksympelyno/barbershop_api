@@ -3,11 +3,11 @@ import { StatisticsService } from './statistics.service';
 import { PopularHaircut } from './types/statistics.interface';
 import { ApiOperation, ApiParam } from '@nestjs/swagger';
 import { Roles } from 'src/decorators/roles.decorator';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { UserRole } from 'src/common/enums/role.enum';
 
 @Controller('statistics')
-@Roles('user', 'manager')
+@Roles(UserRole.Admin)
 @UseGuards(RolesGuard)
 export class StatisticsController {
   constructor(private readonly statisticsService: StatisticsService) {}
@@ -30,7 +30,7 @@ export class StatisticsController {
   @ApiOperation({ summary: 'Get total clients for a branch' })
   @ApiParam({
     name: 'branchId',
-    description: 'The ID of the branch',
+    description: 'The Id of the branch',
     type: String,
   })
   getTotalClients(@Param('branchId') branchId: string): Promise<number> {

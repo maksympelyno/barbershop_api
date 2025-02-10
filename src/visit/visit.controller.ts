@@ -9,16 +9,17 @@ import {
   ApiParam,
   ApiResponse,
 } from '@nestjs/swagger';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { Roles } from 'src/decorators/roles.decorator';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
+import { UserRole } from 'src/common/enums/role.enum';
 
 @Controller('visit')
+@Roles(UserRole.Manager)
+@UseGuards(RolesGuard)
 export class VisitController {
   constructor(private readonly visitService: VisitService) {}
 
   @Post()
-  @Roles('user', 'admin')
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create a new visit' })
   @ApiResponse({
     status: 201,

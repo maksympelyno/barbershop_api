@@ -10,7 +10,7 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { LoginResponse } from './auth.model';
 
 @Controller('auth')
 export class AuthController {
@@ -25,7 +25,7 @@ export class AuthController {
     type: CreateUserDto,
     description: 'User data for registration',
   })
-  async login(@Request() req) {
+  async login(@Request() req): Promise<LoginResponse> {
     return this.authService.login(req.user);
   }
 
@@ -37,7 +37,7 @@ export class AuthController {
     type: CreateUserDto,
     description: 'User data for registration',
   })
-  async register(@Body() userData: CreateUserDto) {
+  async register(@Body() userData: CreateUserDto): Promise<LoginResponse> {
     return this.authService.register(userData);
   }
 }

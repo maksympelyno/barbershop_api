@@ -18,23 +18,27 @@ export class VisitService {
   ) {}
 
   async createVisit(createVisitDto: CreateVisitDto): Promise<Visit> {
-    const client = await this.clientModel.findById(createVisitDto.client);
+    const client: ClientDocument | null = await this.clientModel.findById(
+      createVisitDto.client,
+    );
     if (!client) {
       throw new NotFoundException('Client not found');
     }
 
-    const haircut = await this.haircutModel.findById(createVisitDto.haircut);
+    const haircut: HaircutDocument | null = await this.haircutModel.findById(
+      createVisitDto.haircut,
+    );
     if (!haircut) {
       throw new NotFoundException('Haircut not found');
     }
 
     // Обчислення ціни з урахуванням можливих знижок, бонусів та іншого, на основі даних про клієнта/стрижку/філію
-    let finalPrice = haircut.price;
+    let finalPrice: number = haircut.price;
     if (client.isRegular) {
       finalPrice *= 0.97;
     }
 
-    const visit = await this.visitModel.create({
+    const visit: VisitDocument = await this.visitModel.create({
       ...createVisitDto,
       finalPrice,
       branch: haircut.branch,
@@ -42,7 +46,7 @@ export class VisitService {
 
     if (!client.isRegular) {
       const visitCount = await this.visitModel.countDocuments({
-        client: client._id,
+        client: client._id.toString(),
       });
 
       if (visitCount >= 5) {
@@ -57,7 +61,7 @@ export class VisitService {
   }
 
   async getAllVisits(): Promise<VisitInfo[]> {
-    const visits = await this.visitModel
+    const visits: VisitDocument[] = await this.visitModel
       .find()
       .populate('client', 'lastName firstName phoneNumber isRegular')
       .populate('haircut', 'name price')
@@ -82,14 +86,14 @@ export class VisitService {
   }
 
   async getVisitsByBranchId(branchId: string): Promise<VisitInfo[]> {
-    const visits = await this.visitModel
+    const visits: VisitDocument[] = await this.visitModel
       .find({ branch: branchId })
       .populate('client', 'lastName firstName phoneNumber isRegular')
       .populate('haircut', 'name price')
       .exec();
 
     if (!visits.length) {
-      throw new NotFoundException('No visits found for this branch');
+      throw new NotFoundException('No visits found for this branch.');
     }
 
     return visits.map((entry) => ({

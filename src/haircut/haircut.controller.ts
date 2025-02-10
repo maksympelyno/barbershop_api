@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { HaircutService } from './haircut.service';
 import { CreateHaircutDto } from './dto/create-haircut.dto';
@@ -14,8 +15,13 @@ import { UpdateHaircutDto } from './dto/update-haircut.dto';
 import { Haircut } from './schemas/haircut.schema';
 import { HistoryChange } from './types/history-change.response';
 import { ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { Roles } from 'src/decorators/roles.decorator';
+import { UserRole } from 'src/common/enums/role.enum';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @Controller('haircut')
+@Roles(UserRole.Manager, UserRole.Admin)
+@UseGuards(RolesGuard)
 export class HaircutController {
   constructor(private readonly haircutService: HaircutService) {}
 
@@ -79,6 +85,23 @@ export class HaircutController {
     @Query('name') name?: string,
   ): Promise<Haircut[]> {
     return this.haircutService.getHaircutsByBranch(branchId, name);
+  }
+
+  @Get('name')
+  @ApiOperation({ summary: 'Get haircuts by name' })
+  @ApiQuery({
+    name: 'name',
+    type: String,
+    required: false,
+    description: 'Search for haircuts by name',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Successfully retrieved haircuts by name.',
+    type: [Haircut],
+  })
+  getHaircutsByName(@Query('name') name: string): Promise<Haircut[]> {
+    return this.haircutService.getHaircutsByName(name);
   }
 
   @Get('price-history/:id')

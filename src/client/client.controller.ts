@@ -6,6 +6,7 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiOperation,
@@ -17,8 +18,13 @@ import {
 import { ClientService } from './client.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { Client } from './schemas/client.schema';
+import { Roles } from 'src/decorators/roles.decorator';
+import { UserRole } from 'src/common/enums/role.enum';
+import { RolesGuard } from 'src/auth/guards/roles.guard';
 
 @Controller('client')
+@Roles(UserRole.Manager)
+@UseGuards(RolesGuard)
 export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
